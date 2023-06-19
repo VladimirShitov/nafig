@@ -1,3 +1,5 @@
+from typing import Literal, Union
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -8,7 +10,7 @@ from nafig.utils import _bin_features
 def na_text_barplot(
     df,
     num_bins=10,
-    remove_empty_bins=False,
+    remove_empty_bins: Union[bool, Literal["right"]] = False,
     font_size=6,
     line_height=1,
     y_tick_step=10,
@@ -30,8 +32,8 @@ def na_text_barplot(
         Dataframe to visualize
     num_bins : int = 10
         Number of bins to split the features into
-    remove_empty_bins : bool = False
-        Whether to remove bins that have no features in them
+    remove_empty_bins : Union[bool, Literal["right"]] = False,
+        Whether to remove bins that have no features in them. If "right", only the rightmost empty bins are removed.
     font_size : int = 6
         Font size for the feature names
     line_height : float = 1
@@ -61,45 +63,56 @@ def na_text_barplot(
     Returns
     -------
     matplotlib axis
-    
+
     """
     # table where 1 mean that feature is missed for an observations, and 0 that it is present
     na_df = df.isna().astype(int)
 
     # How many NAs does each feature has
     sorted_na_counts = na_df.sum(axis=0).sort_values(ascending=False)
-    
+
     percentages = (sorted_na_counts / df.shape[0]) * 100
 
     # Split the data into bins
     bin_ranges = list(range(0, 101, 100 // num_bins))
-    bin_labels = np.array([f"{bin_ranges[i]}-{bin_ranges[i + 1]}%" for i in range(num_bins)])
-    
-    binned_features = _bin_features(num_bins=num_bins, na_percentages=percentages,
-                                    bin_ranges=bin_ranges)
-    
+    bin_labels = np.array(
+        [f"{bin_ranges[i]}-{bin_ranges[i + 1]}%" for i in range(num_bins)]
+    )
+
+    binned_features = _bin_features(
+        num_bins=num_bins, na_percentages=percentages, bin_ranges=bin_ranges
+    )
+
     if hue is None:
         hue = df.dtypes
-    
+
     # Sort features within each bin based on hue
     if hue is not False:
         for bin_features in binned_features:
             bin_features.sort(key=lambda feature: hue[df.columns.get_loc(feature)])
-                
+
     bin_lengths = np.array([len(feature_bin) for feature_bin in binned_features])
-    
-    if remove_empty_bins:
-        non_empty_bins = bin_lengths > 0
-        binned_features = binned_features[non_empty_bins]
-        bin_labels = bin_labels[non_empty_bins]
-        bin_lengths = bin_lengths[non_empty_bins]
-        
+
+    if remove_empty_bins is True:
+        bins_to_leave = bin_lengths > 0
+    elif remove_empty_bins == "right":
+        bins_to_leave = bin_lengths > 0
+        # Remove empty bins from the right
+        while not bins_to_leave[-1]:
+            bins_to_leave = bins_to_leave[:-1]
+    else:
+        bins_to_leave = np.ones_like(binned_features, dtype=bool)
+
+    binned_features = binned_features[bins_to_leave]
+    bin_labels = bin_labels[bins_to_leave]
+    bin_lengths = bin_lengths[bins_to_leave]
+
     bin_indices = np.arange(len(binned_features))
-    
+
     # Find the largest bin to extract y ticks from it
     largest_bin_idx = np.argmax(bin_lengths)
     max_features_per_bin = bin_lengths[largest_bin_idx]
-    
+
     fig, ax = plt.subplots(figsize=(fig_width, 6), dpi=dpi)
 
     fig.patch.set_facecolor(background_color)
@@ -107,31 +120,47 @@ def na_text_barplot(
 
     ax.set_xlim(-1, len(binned_features))
     ax.set_ylim(0, max_features_per_bin)
-    
+
     if hue is not False:
         # Create a colormap based on the specified palette
         colors = sns.color_palette(palette, len(np.unique(hue)))
         cmap = dict(zip(np.unique(hue), colors))
-        
+
         # Add legend with colors
-        legend_elements = [plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=cmap[label],
-                                      markersize=5, label=label)
-                           for label in np.unique(hue)]
+        legend_elements = [
+            plt.Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                markerfacecolor=cmap[label],
+                markersize=5,
+                label=label,
+            )
+            for label in np.unique(hue)
+        ]
         ax.legend(handles=legend_elements, title="Features")
 
     # Plot the feature names at specified coordinates
     for i, features in enumerate(binned_features):
         for j, feature in enumerate(features):
             color = "black" if hue is False else cmap[hue[df.columns.get_loc(feature)]]
-            ax.text(i, j * line_height, feature, ha="center", va="bottom", fontdict={"size": font_size, "color": color})
-            
+            ax.text(
+                i,
+                j * line_height,
+                feature,
+                ha="center",
+                va="bottom",
+                fontdict={"size": font_size, "color": color},
+            )
+
             # Add a new tick each `y_tick_step` iterations
             if i == largest_bin_idx and j % y_tick_step == 0 and j > 0:
                 tick_y = (j - 1) * line_height
                 ax.text(x=-1, y=tick_y, s=f"{j} –")
-                  
+
     title_y = max_features_per_bin * line_height + title_pad
-    
+
     if title:
         if title_loc == "left":
             title_x = -1
@@ -139,14 +168,14 @@ def na_text_barplot(
             title_x = np.mean(bin_indices)
         else:
             title_x = np.max(bin_indices)
-            
+
         ax.text(title_x, title_y, title, ha=title_loc)
 
     ax.set_xlabel(xlabel)
 
     ax.set_xticks(bin_indices, bin_labels)
     ax.set_yticks([], [])
-    
+
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.spines["left"].set_visible(False)
