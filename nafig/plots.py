@@ -93,15 +93,16 @@ def na_text_barplot(
 
     bin_lengths = np.array([len(feature_bin) for feature_bin in binned_features])
 
+    bins_to_leave = np.ones_like(binned_features, dtype=bool)
+
     if remove_empty_bins is True:
         bins_to_leave = bin_lengths > 0
     elif remove_empty_bins == "right":
-        bins_to_leave = bin_lengths > 0
-        # Remove empty bins from the right
-        while not bins_to_leave[-1]:
-            bins_to_leave = bins_to_leave[:-1]
-    else:
-        bins_to_leave = np.ones_like(binned_features, dtype=bool)
+        empty_bins = bin_lengths == 0
+        for i in range(len(empty_bins) - 1, -1, -1):
+            if not empty_bins[i]:
+                break
+            bins_to_leave[i] = False
 
     binned_features = binned_features[bins_to_leave]
     bin_labels = bin_labels[bins_to_leave]
