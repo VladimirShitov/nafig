@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "nafig"
-version = "0.1.0"
+version = "0.1.1"
 description = "Package for creating figures with NA data distribution"
 readme = "README.md"
 authors = ["vladimirshitov98 <vladimirshitov98@gmail.com>"]
@@ -31,6 +31,7 @@ classifiers = [  #! Update me
 
 [tool.poetry.dependencies]
 python = "^3.9"
+click = "8.0.2"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.1"
