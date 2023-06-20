@@ -19,14 +19,14 @@ def na_text_barplot(
     fig_width=15,
     dpi=100,
     xlabel="NA percentage",
-    xlabel_fontsize=6,
+    xlabel_fontsize=12,
     title_pad=1,
     title="",
     title_loc="center",
-    title_fontsize=6,
+    title_fontsize=12,
     background_color="white",
     legend_title: str = "Feature type",
-    legend_fontsize: int = 6,
+    legend_fontsize: int = 12,
 ) -> plt.Axes:
     """Visualize missing values in a dataframe. Splits features (columns) in bins grouped by proportion of NA values.
 
@@ -55,7 +55,7 @@ def na_text_barplot(
         Dots per inch for the figure
     xlabel : str = "NA percentage"
         Label for the x axis
-    xlabel_fontsize : int = 6
+    xlabel_fontsize : int = 12
         Font size for the x axis label
     title_pad : float = 1
         Padding for the title
@@ -63,13 +63,13 @@ def na_text_barplot(
         Title for the plot
     title_loc : str = "center"
         Location of the title. Can be one of "left", "center", "right"
-    title_fontsize : int = 6
+    title_fontsize : int = 12
         Font size for the title
     background_color : str = "white"
         Background color for the plot
     legend_title : str = "Feature type"
         Title for the legend
-    legend_fontsize : int = 6
+    legend_fontsize : int = 12
         Font size for the legend
 
     Returns
