@@ -23,6 +23,7 @@ def na_text_barplot(
     title_pad=1,
     title="",
     title_loc="center",
+    title_fontsize=6,
     background_color="white",
     legend_title: str = "Feature type",
     legend_fontsize: int = 6,
@@ -62,6 +63,8 @@ def na_text_barplot(
         Title for the plot
     title_loc : str = "center"
         Location of the title. Can be one of "left", "center", "right"
+    title_fontsize : int = 6
+        Font size for the title
     background_color : str = "white"
         Background color for the plot
     legend_title : str = "Feature type"
@@ -180,10 +183,10 @@ def na_text_barplot(
             title_x = np.max(bin_indices)
 
         ax.text(
-            title_x, title_y, title, ha=title_loc, fontdict={"size": xlabel_fontsize}
+            title_x, title_y, title, ha=title_loc, fontdict={"size": title_fontsize}
         )
 
-    ax.set_xlabel(xlabel)
+    ax.set_xlabel(xlabel, fontsize=xlabel_fontsize)
 
     ax.set_xticks(bin_indices, bin_labels)
     ax.set_yticks([], [])
