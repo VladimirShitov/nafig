@@ -24,6 +24,7 @@ def na_text_barplot(
     title_loc="center",
     background_color="white",
     legend_title: str = "Feature type",
+    legend_fontsize: int = 6,
 ) -> plt.Axes:
     """Visualize missing values in a dataframe. Splits features (columns) in bins grouped by proportion of NA values.
 
@@ -62,6 +63,8 @@ def na_text_barplot(
         Background color for the plot
     legend_title : str = "Feature type"
         Title for the legend
+    legend_fontsize : int = 6
+        Font size for the legend
 
     Returns
     -------
@@ -143,7 +146,7 @@ def na_text_barplot(
             )
             for label in np.unique(hue)
         ]
-        ax.legend(handles=legend_elements, title=legend_title)
+        ax.legend(handles=legend_elements, title=legend_title, fontsize=legend_fontsize)
 
     # Plot the feature names at specified coordinates
     for i, features in enumerate(binned_features):
