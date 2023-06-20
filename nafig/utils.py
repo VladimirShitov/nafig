@@ -86,3 +86,31 @@ def label_consecutive_bins(binned_features) -> list[int]:
             current_group += 1
 
     return groups
+
+
+def get_xlimits_for_breaks(groups, xlimits):
+    breaks = []
+    current_group = None
+    start_limit = None
+    end_limit = None
+
+    for i, group in enumerate(groups):
+        if group != current_group:
+            if current_group is not None:
+
+                if current_group == -1:
+                    start_limit = xlimits[i]
+                else:
+                    end_limit = xlimits[i - 1]
+                    breaks.append((start_limit, end_limit))
+
+            if group != -1:
+                start_limit = xlimits[i]
+
+            current_group = group
+
+    if current_group is not None and current_group != -1:
+        end_limit = xlimits[-1]
+        breaks.append((start_limit, end_limit))
+
+    return breaks
