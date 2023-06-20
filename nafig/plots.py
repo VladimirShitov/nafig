@@ -19,10 +19,15 @@ def na_text_barplot(
     fig_width=15,
     dpi=100,
     xlabel="NA percentage",
+    xlabel_fontsize=12,
     title_pad=1,
     title="",
     title_loc="center",
+    title_fontsize=12,
     background_color="white",
+    legend_title: str = "Feature type",
+    legend_fontsize: int = 12,
+    legend_title_fontsize: int = 12,
 ) -> plt.Axes:
     """Visualize missing values in a dataframe. Splits features (columns) in bins grouped by proportion of NA values.
 
@@ -51,14 +56,24 @@ def na_text_barplot(
         Dots per inch for the figure
     xlabel : str = "NA percentage"
         Label for the x axis
+    xlabel_fontsize : int = 12
+        Font size for the x axis label
     title_pad : float = 1
         Padding for the title
     title : str = ""
         Title for the plot
     title_loc : str = "center"
         Location of the title. Can be one of "left", "center", "right"
+    title_fontsize : int = 12
+        Font size for the title
     background_color : str = "white"
         Background color for the plot
+    legend_title : str = "Feature type"
+        Title for the legend
+    legend_fontsize : int = 12
+        Font size for the legend
+    legend_title_fontsize : int = 12
+        Font size for the legend title
 
     Returns
     -------
@@ -140,7 +155,12 @@ def na_text_barplot(
             )
             for label in np.unique(hue)
         ]
-        ax.legend(handles=legend_elements, title="Features")
+        ax.legend(
+            handles=legend_elements,
+            title=legend_title,
+            fontsize=legend_fontsize,
+            title_fontsize=legend_title_fontsize,
+        )
 
     # Plot the feature names at specified coordinates
     for i, features in enumerate(binned_features):
@@ -170,9 +190,11 @@ def na_text_barplot(
         else:
             title_x = np.max(bin_indices)
 
-        ax.text(title_x, title_y, title, ha=title_loc)
+        ax.text(
+            title_x, title_y, title, ha=title_loc, fontdict={"size": title_fontsize}
+        )
 
-    ax.set_xlabel(xlabel)
+    ax.set_xlabel(xlabel, fontsize=xlabel_fontsize)
 
     ax.set_xticks(bin_indices, bin_labels)
     ax.set_yticks([], [])
