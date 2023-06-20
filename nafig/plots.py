@@ -19,6 +19,7 @@ def na_text_barplot(
     fig_width=15,
     dpi=100,
     xlabel="NA percentage",
+    xlabel_fontsize=6,
     title_pad=1,
     title="",
     title_loc="center",
@@ -53,6 +54,8 @@ def na_text_barplot(
         Dots per inch for the figure
     xlabel : str = "NA percentage"
         Label for the x axis
+    xlabel_fontsize : int = 6
+        Font size for the x axis label
     title_pad : float = 1
         Padding for the title
     title : str = ""
@@ -176,7 +179,9 @@ def na_text_barplot(
         else:
             title_x = np.max(bin_indices)
 
-        ax.text(title_x, title_y, title, ha=title_loc)
+        ax.text(
+            title_x, title_y, title, ha=title_loc, fontdict={"size": xlabel_fontsize}
+        )
 
     ax.set_xlabel(xlabel)
 
