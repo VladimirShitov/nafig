@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/github/license/VladimirShitov/nafig)](https://github.com/VladimirShitov/nafig/blob/master/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
-Package for creating figures with NA data distribution
+Do you want to visualize missing values in your data? There are plenty amazing methods (check [missingno](https://github.com/ResidentMario/missingno) for example) but they all look bulky when your data has too many columns. `nafig` will help you to build a perfect NA figure!
 
 </div>
 
@@ -28,6 +28,101 @@ or install with `Poetry`
 ```bash
 poetry add nafig
 ```
+
+# Usage
+
+Here are some examples of the usage both for simulated and real world data. Check [this notebook](example.ipynb) to play with code yourself!
+
+First, let's import the core function and other useful things:
+
+```python
+>>> from nafig.plots import na_text_barplot  # The core function
+>>> from nafig.utils import create_example_data  # To simulate data
+>>> import pandas as pd  # To works with tables
+```
+
+```python
+>>> df, feature_types = create_example_data()
+```
+
+`df` is just a pandas dataframe with missing values. `feature_types` is an array, containing data type description for each column. This is just an example, so labels don't correspond to actual data types.
+
+```python
+>>> feature_types[:10]
+array(['Categorical', 'Categorical', 'Binary', 'Continuous', 'Continuous',
+       'Continuous', 'Binary', 'Continuous', 'Continuous', 'Binary'],
+      dtype='<U11')
+```
+
+This toy dataframe contains 300 columns. Visualization of missing data with heatmap would unfortunately be too bulky. How to explore missing data distribution in this dataset? Try NA text barplot!
+
+```python
+>>> na_text_barplot(df, hue=feature_types, line_height=1.5)
+```
+
+![1_simulated_data.png](images/1_simulated_data.png)
+
+Columns of the dataset are binned by percentage of the missing data in them. Colouring by feature types helps to understand, which types of data are missing. On Y-axis you can see the number of features in each group.
+
+You can vary the number of bins using num_bins parameter:
+
+```python
+>>> na_text_barplot(df, hue=feature_types, line_height=1.5, num_bins=20)
+```
+
+![2_20_bins.png](images/2_20_bins.png)
+
+```python
+>>>na_text_barplot(df, hue=feature_types, line_height=2, num_bins=2, fig_width=8, font_size=3)
+```
+
+![3_2_bins.png](images/3_2_bins.png)
+
+Now let's see some real data examples!
+
+## House prices missing data visualization
+
+Data source: https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data?select=train.csv
+
+```python
+>>> DATA_PATH = "data/house-prices/train.csv"
+>>> house_prices_df = pd.read_csv(DATA_PATH, index_col=0)
+```
+
+This is a reasonably good data with most of the values present. But thanks to this plot, we can see, which features are the bad guys!
+
+```python
+>>> na_text_barplot(house_prices_df, fig_width=17, num_bins=20, line_height=1.5)
+```
+
+![4_house_prices_data.png](images/4_house_prices_data.png)
+
+Note that if you don't pass the `hue` parameter, features will be colored by the data type of the column. If you don't want to colorize features at all, set `hue` to `False`.
+
+By setting `remove_empty_bins` to `True`, you can remove the empty bins. It will require a reader to pay more attention to the X-axis but will save you some space.
+
+```python
+>>> na_text_barplot(house_prices_df, fig_width=10, num_bins=20, line_height=1.5, remove_empty_bins=True)
+```
+
+![5_house_prices_no_bins.png](images/5_house_prices_no_bins.png)
+
+## Seatle AirBnB dataset missing values vizualization
+
+Data source: https://www.kaggle.com/datasets/airbnb/seattle
+
+```python
+>>> airbnb_df = pd.read_csv("data/airbnb/listings.csv")
+```
+
+This dataset has a bit more missing data. On the plot we can see that all integer features are almost complete, and some `object` and floating number columns contain missing values
+
+```python
+>>> na_text_barplot(airbnb_df, fig_width=18, line_height=1.8, font_size=9, remove_empty_bins=True)
+```
+
+![6_airbnb_data.png](images/6_airbnb_data.png)
+
 
 # Developers section
 
