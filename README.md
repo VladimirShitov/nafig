@@ -124,6 +124,7 @@ This dataset has a bit more missing data. On the plot we can see that all intege
 
 ![6_airbnb_data.png](images/6_airbnb_data.png)
 
+Feel free to explore other parameters! There are more to help you create a perfect missing values visualization
 
 # Developers section
 
