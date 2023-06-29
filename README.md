@@ -102,7 +102,8 @@ Note that if you don't pass the `hue` parameter, features will be colored by the
 By setting `remove_empty_bins` to `True`, you can remove the empty bins. It will require a reader to pay more attention to the X-axis but will save you some space.
 
 ```python
->>> na_text_barplot(house_prices_df, fig_width=10, num_bins=20, line_height=1.5, remove_empty_bins=True)
+>>> na_text_barplot(house_prices_df, fig_width=10, num_bins=20, 
+                    line_height=1.5, remove_empty_bins=True)
 ```
 
 ![5_house_prices_no_bins.png](images/5_house_prices_no_bins.png)
