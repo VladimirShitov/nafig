@@ -73,7 +73,7 @@ You can vary the number of bins using num_bins parameter:
 ![2_20_bins.png](images/2_20_bins.png)
 
 ```python
->>>na_text_barplot(df, hue=feature_types, line_height=2, num_bins=2, fig_width=8, font_size=3)
+>>> na_text_barplot(df, hue=feature_types, line_height=2, num_bins=2, fig_width=8, font_size=3)
 ```
 
 ![3_2_bins.png](images/3_2_bins.png)
