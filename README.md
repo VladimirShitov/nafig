@@ -13,102 +13,120 @@
 [![License](https://img.shields.io/github/license/VladimirShitov/nafig)](https://github.com/VladimirShitov/nafig/blob/master/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
-Package for creating figures with NA data distribution
+Do you want to visualize missing values in your data? There are plenty amazing methods (check [missingno](https://github.com/ResidentMario/missingno) for example) but they all look bulky when your data has too many columns. `nafig` will help you to build a perfect NA figure!
 
 </div>
 
-## Very first steps
-
-### Initialize your code
-
-1. Initialize `git` inside your repo:
+# Installation
 
 ```bash
-cd nafig && git init
+$ pip install -U nafig
 ```
 
-2. If you don't have `Poetry` installed run:
+or install with `Poetry`
 
 ```bash
-make poetry-download
+$ poetry add nafig
 ```
 
-3. Initialize poetry and install `pre-commit` hooks:
+# Usage
 
-```bash
-make install
-make pre-commit-install
+Here are some examples of the usage both for simulated and real world data. Check [this notebook](example.ipynb) to play with code yourself!
+
+First, let's import the core function and other useful things:
+
+```python
+>>> from nafig.plots import na_text_barplot  # The core function
+>>> from nafig.utils import create_example_data  # To simulate data
+>>> import pandas as pd  # To works with tables
 ```
 
-4. Run the codestyle:
-
-```bash
-make codestyle
+```python
+>>> df, feature_types = create_example_data()
 ```
 
-5. Upload initial code to GitHub:
+`df` is just a pandas dataframe with missing values. `feature_types` is an array, containing data type description for each column. This is just an example, so labels don't correspond to actual data types.
 
-```bash
-git add .
-git commit -m ":tada: Initial commit"
-git branch -M main
-git remote add origin https://github.com/VladimirShitov/nafig.git
-git push -u origin main
+```python
+>>> feature_types[:10]
+array(['Categorical', 'Categorical', 'Binary', 'Continuous', 'Continuous',
+       'Continuous', 'Binary', 'Continuous', 'Continuous', 'Binary'],
+      dtype='<U11')
 ```
 
-### Set up bots
+This toy dataframe contains 300 columns. Visualization of missing data with heatmap would unfortunately be too bulky. How to explore missing data distribution in this dataset? Try NA text barplot!
 
-- Set up [Dependabot](https://docs.github.com/en/github/administering-a-repository/enabling-and-disabling-version-updates#enabling-github-dependabot-version-updates) to ensure you have the latest dependencies.
-- Set up [Stale bot](https://github.com/apps/stale) for automatic issue closing.
+```python
+>>> na_text_barplot(df, hue=feature_types, line_height=1.5)
+```
 
-### Poetry
+![1_simulated_data.png](images/1_simulated_data.png)
 
-Want to know more about Poetry? Check [its documentation](https://python-poetry.org/docs/).
+Columns of the dataset are binned by percentage of the missing data in them. Colouring by feature types helps to understand, which types of data are missing. On Y-axis you can see the number of features in each group.
 
-<details>
-<summary>Details about Poetry</summary>
-<p>
+You can vary the number of bins using num_bins parameter:
 
-Poetry's [commands](https://python-poetry.org/docs/cli/#commands) are very intuitive and easy to learn, like:
+```python
+>>> na_text_barplot(df, hue=feature_types, line_height=1.5, num_bins=20)
+```
 
-- `poetry add numpy@latest`
-- `poetry run pytest`
-- `poetry publish --build`
+![2_20_bins.png](images/2_20_bins.png)
 
-etc
-</p>
-</details>
+```python
+>>> na_text_barplot(df, hue=feature_types, line_height=2, num_bins=2, fig_width=8, font_size=3)
+```
 
-### Building and releasing your package
+![3_2_bins.png](images/3_2_bins.png)
 
-Building a new version of the application contains steps:
+Now let's see some real data examples!
 
-- Bump the version of your package `poetry version <version>`. You can pass the new version explicitly, or a rule such as `major`, `minor`, or `patch`. For more details, refer to the [Semantic Versions](https://semver.org/) standard.
-- Make a commit to `GitHub`.
-- Create a `GitHub release`.
-- And... publish 🙂 `poetry publish --build`
+## House prices missing data visualization
 
-## 🎯 What's next
+Data source: https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data?select=train.csv
 
-Well, that's up to you 💪🏻. I can only recommend the packages and articles that helped me.
+```python
+>>> DATA_PATH = "data/house-prices/train.csv"
+>>> house_prices_df = pd.read_csv(DATA_PATH, index_col=0)
+```
 
-- [`Typer`](https://github.com/tiangolo/typer) is great for creating CLI applications.
-- [`Rich`](https://github.com/willmcgugan/rich) makes it easy to add beautiful formatting in the terminal.
-- [`Pydantic`](https://github.com/samuelcolvin/pydantic/) – data validation and settings management using Python type hinting.
-- [`Loguru`](https://github.com/Delgan/loguru) makes logging (stupidly) simple.
-- [`tqdm`](https://github.com/tqdm/tqdm) – fast, extensible progress bar for Python and CLI.
-- [`IceCream`](https://github.com/gruns/icecream) is a little library for sweet and creamy debugging.
-- [`orjson`](https://github.com/ijl/orjson) – ultra fast JSON parsing library.
-- [`Returns`](https://github.com/dry-python/returns) makes you function's output meaningful, typed, and safe!
-- [`Hydra`](https://github.com/facebookresearch/hydra) is a framework for elegantly configuring complex applications.
-- [`FastAPI`](https://github.com/tiangolo/fastapi) is a type-driven asynchronous web framework.
+This is a reasonably good data with most of the values present. But thanks to this plot, we can see, which features are the bad guys!
 
-Articles:
+```python
+>>> na_text_barplot(house_prices_df, fig_width=17, num_bins=20, line_height=1.5)
+```
 
-- [Open Source Guides](https://opensource.guide/).
-- [A handy guide to financial support for open source](https://github.com/nayafia/lemonade-stand)
-- [GitHub Actions Documentation](https://help.github.com/en/actions).
-- Maybe you would like to add [gitmoji](https://gitmoji.carloscuesta.me/) to commit names. This is really funny. 😄
+![4_house_prices_data.png](images/4_house_prices_data.png)
+
+Note that if you don't pass the `hue` parameter, features will be colored by the data type of the column. If you don't want to colorize features at all, set `hue` to `False`.
+
+By setting `remove_empty_bins` to `True`, you can remove the empty bins. It will require a reader to pay more attention to the X-axis but will save you some space.
+
+```python
+>>> na_text_barplot(house_prices_df, fig_width=10, num_bins=20, 
+                    line_height=1.5, remove_empty_bins=True)
+```
+
+![5_house_prices_no_bins.png](images/5_house_prices_no_bins.png)
+
+## Seatle AirBnB dataset missing values vizualization
+
+Data source: https://www.kaggle.com/datasets/airbnb/seattle
+
+```python
+>>> airbnb_df = pd.read_csv("data/airbnb/listings.csv")
+```
+
+This dataset has a bit more missing data. On the plot we can see that all integer features are almost complete, and some `object` and floating number columns contain missing values
+
+```python
+>>> na_text_barplot(airbnb_df, fig_width=18, line_height=1.8, font_size=9, remove_empty_bins=True)
+```
+
+![6_airbnb_data.png](images/6_airbnb_data.png)
+
+Feel free to explore other parameters! There are more to help you create a perfect missing values visualization
+
+# Developers section
 
 ## 🚀 Features
 
@@ -130,25 +148,6 @@ Articles:
 - [Dockerfile](https://github.com/VladimirShitov/nafig/blob/master/docker/Dockerfile) for your package.
 - Always up-to-date dependencies with [`@dependabot`](https://dependabot.com/). You will only [enable it](https://docs.github.com/en/github/administering-a-repository/enabling-and-disabling-version-updates#enabling-github-dependabot-version-updates).
 - Automatic drafts of new releases with [`Release Drafter`](https://github.com/marketplace/actions/release-drafter). You may see the list of labels in [`release-drafter.yml`](https://github.com/VladimirShitov/nafig/blob/master/.github/release-drafter.yml). Works perfectly with [Semantic Versions](https://semver.org/) specification.
-
-### Open source community features
-
-- Ready-to-use [Pull Requests templates](https://github.com/VladimirShitov/nafig/blob/master/.github/PULL_REQUEST_TEMPLATE.md) and several [Issue templates](https://github.com/VladimirShitov/nafig/tree/master/.github/ISSUE_TEMPLATE).
-- Files such as: `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` are generated automatically.
-- [`Stale bot`](https://github.com/apps/stale) that closes abandoned issues after a period of inactivity. (You will only [need to setup free plan](https://github.com/marketplace/stale)). Configuration is [here](https://github.com/VladimirShitov/nafig/blob/master/.github/.stale.yml).
-- [Semantic Versions](https://semver.org/) specification with [`Release Drafter`](https://github.com/marketplace/actions/release-drafter).
-
-## Installation
-
-```bash
-pip install -U nafig
-```
-
-or install with `Poetry`
-
-```bash
-poetry add nafig
-```
 
 
 
