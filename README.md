@@ -20,13 +20,13 @@ Do you want to visualize missing values in your data? There are plenty amazing m
 # Installation
 
 ```bash
-pip install -U nafig
+$ pip install -U nafig
 ```
 
 or install with `Poetry`
 
 ```bash
-poetry add nafig
+$ poetry add nafig
 ```
 
 # Usage
