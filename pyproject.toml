@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "nafig"
-version = "1.0.0"
+version = "1.0.1"
 description = "Package for creating figures with NA data distribution"
 readme = "README.md"
 authors = ["vladimirshitov98 <vladimirshitov98@gmail.com>"]
