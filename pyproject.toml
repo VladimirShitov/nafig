@@ -31,7 +31,7 @@ classifiers = [  #! Update me
 
 [tool.poetry.dependencies]
 python = "^3.9"
-click = "8.0.2"
+click = "8.1.6"
 matplotlib = "^3.7.1"
 seaborn = "^0.12.2"
 
